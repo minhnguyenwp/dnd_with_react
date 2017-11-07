@@ -10,6 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Link from '../../components/Link';
+import update from 'react/lib/update';
 // import _ from 'lodash';
 
 // import libary
@@ -29,10 +30,14 @@ const reorder =  (list, startIndex, endIndex) => {
 };
 // 2. Fn 'insertArrByIndx' : insert a value into Array by index
 const insertArrByIndx = (arr, item, index) => {
-  arr = arr.reduce(function(s, a, i) {
-    i == index ? s.push(item, a) : s.push(a);
-    return s;
-  }, []);
+  if (index >= arr.length) {
+    arr.push(item);
+  } else {
+    arr = arr.reduce(function(s, a, i) {
+      i == index ? s.push(item, a) : s.push(a);
+      return s;
+    }, []);
+  }
   //console.log(arr);
   return arr;
 }
@@ -98,58 +103,65 @@ class Home extends React.Component {
 
     // create list profile
     this.setState({
-      arrNewProfiles: arrNew,
-      arrPausedProfiles: arrPaused
+      profiles: [arrNew,arrPaused]
     });
   }
 
-  onDragEnd(result) {
-    console.log('onDragEnd',result);
-    const {arrNewProfiles, arrPausedProfiles} = this.state;
+  async onDragEnd(r) {
+    // console.log('onDragEnd',r);
+    const {profiles} = this.state;
     // 1. dropped outside the list
-    if (!result.destination) {
+    if (!r.destination) {
       return;
     }
+
+    let desIndx = parseInt(r.destination.droppableId);
+    let srcIndx = parseInt(r.source.droppableId);
     // 2. Dropped other group
-    if (result.destination.droppableId != result.source.droppableId) {
-      if (result.source.droppableId == '1') {
-        let tempArr = insertArrByIndx(arrPausedProfiles, arrNewProfiles[result.source.index], result.destination.index);
-        arrNewProfiles.splice(result.source.index,1);
+    if (desIndx != srcIndx) {
 
-        // Set State
-        this.setState({
-          arrNewProfiles,
-          arrPausedProfiles: tempArr
-        });
-      }
-      if (result.source.droppableId == '2') {
-        let tempArr = insertArrByIndx(arrNewProfiles, arrPausedProfiles[result.source.index], result.destination.index);
-        arrPausedProfiles.splice(result.source.index,1);
+      let tempArr = insertArrByIndx(profiles[desIndx],
+                              profiles[srcIndx][r.source.index],
+                              r.destination.index);
+      profiles[srcIndx].splice(r.source.index,1);
 
-        // Set State
-        this.setState({
-          arrNewProfiles,
-          arrNewProfiles: tempArr
-        });
-      }
+      // Set State
+      await this.setState(update(this.state, {
+        profiles: {
+          [desIndx] : {
+            $set: tempArr
+          }
+        }
+      }));
+      //console.log('profiles', profiles);
     }
     // 3. Same group
     else {
-      const arrNewProfiles = reorder(
-        this.state.arrNewProfiles,
-        result.source.index,
-        result.destination.index
-      );
-      this.setState({
-        arrNewProfiles,
-      });
+      // const arrNewProfiles = reorder(
+      //   this.state.arrNewProfiles,
+      //   r.source.index,
+      //   r.destination.index
+      // );
+      // this.setState({
+      //   arrNewProfiles,
+      // });
+
+      await this.setState(update(this.state, {
+        profiles: {
+          [desIndx] : {
+            $set: reorder(
+              profiles[desIndx],
+              r.source.index,
+              r.destination.index
+            )
+          }
+        }
+      })); // setState
     }
-
-
   }
 
   render() {
-    const {arrNewProfiles, arrPausedProfiles} = this.state;
+    const {profiles} = this.state;
     return (
       <div className="profile_wrap">
           <div className="title_wrap">
@@ -160,18 +172,18 @@ class Home extends React.Component {
 
           <DragDropContext onDragEnd={this.onDragEnd}>
             <div>
-            <Droppable droppableId="1">
+            <Droppable droppableId="0">
               {(provided, snapshot) => (
-                <div ref={provided.innerRef}>
-                  {arrNewProfiles !== null && <NewList dataNews={arrNewProfiles}/>}
+                <div ref={provided.innerRef} className={snapshot.isDraggingOver ? 'box-dragging' : ''}>
+                  {profiles[0] !== null && <NewList dataNews={profiles[0]}/>}
                   {/* END NEW LIST */}
                 </div>
               )}
             </Droppable>
-            <Droppable droppableId="2">
+            <Droppable droppableId="1">
               {(provided, snapshot) => (
                 <div ref={provided.innerRef}>
-                  {arrPausedProfiles !== null && <PausedProfiles dataProfiles={arrPausedProfiles}/>}
+                  {profiles[1] !== null && <PausedProfiles dataProfiles={profiles[1]}/>}
                   {/* END PAUSED PROFILES */}
                 </div>
               )}

@@ -75,11 +75,34 @@ a:hover, a:focus {
     z-index: 2;
 }
 /* ---- CSS LIST PROFILE ----*/
-.profile_itm {
+.itm-w {
     margin-bottom: 20px;
-    overflow: hidden;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -o-border-radius: 10px;
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+}
+.profile_itm {
     outline: none;
     cursor: move;
+    position: relative;
+}
+
+.profile_itm .shadow-img {
+    display: none;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom:-5px;
+
+}
+.profile_itm.dragging .shadow-img {
+    display: block;
+    width: 100%;
+    height: 82px;
 }
 
 .profile_itm .inner {
@@ -145,11 +168,19 @@ a:hover, a:focus {
     font-weight: 300;
     font-size: 12px;
 }
-.profile_itm .num {
+.itm-w .num-clip {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    overflow: hidden;
+}
+.num-clip > .num {
     display: inline-block;
     text-align: center;
     position: absolute;
-    z-index: 10;
     width: 60px;
     height: 60px;
     top: -30px;
@@ -160,6 +191,23 @@ a:hover, a:focus {
     -o-border-radius: 20px;
     border-radius: 20px;
     background-color: #fff;
+}
+.box-dragging .num-clip > .num {
+    border: 1px solid #ddd;
+    color: #ddd;
+}
+
+.num-clip > .num span {
+    font-weight: 700;
+    position: absolute;
+    z-index: 1;
+    right: 18px;
+    bottom: 12px;
+    line-height: normal;
+    font-size: 18px;
+}
+.profile_itm .num {
+    display: none;
 }
 .profile_itm .num span {
     font-weight: 700;
@@ -217,13 +265,16 @@ a:hover, a:focus {
     top: 2px;
 }
 .profile_itm.dragging .num {
+    display: block;
     width: 40px;
-    height: 110px;
+    height: 70px;
     top: 0;
     left: 0;
+    position: absolute;
+    z-index: 1;
     background-image: url('../images/eclip.png');
     background-repeat: no-repeat;
-    background-size: 100% auto;
+    background-size: auto 72px;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     -o-border-radius: 0;
@@ -274,69 +325,86 @@ a:hover, a:focus {
         width: auto;
         padding-left: 15px;
         padding-right: 15px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        -webkit-border-radius: 0px;
+        -moz-border-radius: 0px;
+        -o-border-radius: 0px;
+    }
+    .body-wrapper {
+        padding: 0;
     }
 }
-@media (max-width: 380px) {
+@media (max-width: 500px) {
     .title_wrap {
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
     .title_wrap .ttl {
-        font-size: 28px;
+        font-size: 20px;
     }
     .title_wrap .addnew {
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        top: 3px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
     }
     .title_wrap .addnew span {
-        font-size: 26px;
-        line-height: 40px;
+        line-height: 50px;
     }
-    .title_wrap .addnew::before {
-        visibility: visible;
-        opacity: 1;
-        width: 60px;
-        height: 60px;
-        margin: -30px 0 0 -30px;
-    }
-    .profile_itm {
-        height: 80px;
-    }
-    .profile_itm .ttl {
-        font-size: 20px;
-        line-height: 26px;
-    }
-    .profile_itm .desc {
-        font-size: 16px;
-        max-width: 175px;
-        line-height: 16px;
+    .num-clip > .num span{
+        font-size: 14px;
     }
     .profile_itm .content {
-        height: 70px;
+        height: 50px;
     }
     .profile_itm .blk_content {
-        height: 70px;
+        height: 50px;
+    }
+    .profile_itm .ttl {
+        font-size: 16px;
+    }
+    .profile_itm.dragging .num {
+        height: 50px;
+        width: 29px;
+        background-size: auto 52px;
+    }
+    .profile_itm .blk_content .wrap {
+        left: 15px;
+    }
+    .num-clip > .num {
+        width:40px;
+        height:40px;
+        top: -15px;
+        left: -15px;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        -o-border-radius: 20px;
+        border-radius: 20px;
+    }
+    .profile_itm .blk_content {
+        left: 29px;
+    }
+    .profile_itm.dragging .shadow-img {
+        height: 60px;
+    }
+    .profile_itm .icon_drag {
+        width: 24px;
+        height: 20px;
     }
     .list_profile.new {
-        padding-bottom: 40px;
+        padding-bottom: 20px;
         margin-bottom: 20px;
     }
     .list_profile .block_ttl {
-        font-size: 20px;
         margin-bottom: 20px;
     }
-    .profile_itm .blk_content .wrap  {
-        left: 10px;
-    }
     .list_profile.paused {
-        margin-bottom: 60px;
+        margin-bottom: 40px;
     }
     .button_wrap button {
-        height: 80px;
-        line-height: 80px;
-        font-size: 20px;
+        font-size: 16px;
     }
+}
+@media (max-width: 400px) {
+    .profile_itm .ttl {
+        font-size: 14px;
+    }
+
 }

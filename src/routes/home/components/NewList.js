@@ -4,20 +4,20 @@ import PropTypes from 'prop-types';
 // import libary
 import { Draggable } from 'react-beautiful-dnd';
 
-// using some little inline style helpers to make the app look okay
-const grid = 10;
 const getItemStyle = (draggableStyle, isDragging) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-//   padding: grid * 2,
-//   marginBottom: grid,
-
-  // change background colour if dragging
-  background: isDragging ? '' : '',
-
-  // styles we need to apply on draggables
   ...draggableStyle,
 });
+
+const getStayedItemStyle = (isDragging) => {
+
+    return {
+        backgroundColor: isDragging ? '#ededed' : '',
+        boxShadow: isDragging ? 'inset 0px 0px 10px #bbb' : '',
+        zIndex: isDragging ? '0' : '1'
+    };
+};
 
 class NewList extends React.Component {
     static propTypes = {
@@ -33,7 +33,15 @@ class NewList extends React.Component {
                     return(
                         <Draggable key={item.id} draggableId={item.id}>
                             {(provided, snapshot) => (
-                                <div>
+                                <div className="itm-w"
+                                    style={getStayedItemStyle(
+                                        snapshot.isDragging
+                                    )}>
+                                    <div className="num-clip">
+                                        <div className={"num "}>
+                                            <span>{idx+1}</span>
+                                        </div>
+                                    </div>
                                     <div
                                     ref={provided.innerRef}
                                     style={getItemStyle(
@@ -46,8 +54,8 @@ class NewList extends React.Component {
                                         + (snapshot.isDragging ? 'dragging' : '')}>
                                         <div className="inner">
                                             <div className="content">
-                                                <div className="num">
-                                                    <span>{idx+1}</span>
+                                                <div className={"num " + (snapshot.isDragging ? 'dragging' : '') } >
+
                                                 </div>
                                                 <div className="blk_content">
                                                     <div className="wrap">
@@ -58,8 +66,10 @@ class NewList extends React.Component {
                                                         <img src='./images/dragger.svg' alt="Dragger"/>
                                                     </figure>
                                                 </div>
+                                                <img src='./images/shadow.png' alt="shadow" className="shadow-img"/>
                                             </div>
                                         </div>
+
                                     </div>
                                     </div>
                                     {provided.placeholder}

@@ -4,20 +4,21 @@ import PropTypes from 'prop-types';
 // import libary
 import { Draggable } from 'react-beautiful-dnd';
 
-// using some little inline style helpers to make the app look okay
-const grid = 10;
 const getItemStyle = (draggableStyle, isDragging) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-//   padding: grid * 2,
-//   marginBottom: grid,
-
-  // change background colour if dragging
-  background: isDragging ? '' : '',
-
   // styles we need to apply on draggables
   ...draggableStyle,
 });
+
+const getStayedItemStyle = (isDragging) => {
+
+    return {
+        backgroundColor: isDragging ? '#ededed' : '',
+        boxShadow: isDragging ? 'inset 0px 0px 10px #bbb' : '',
+        zIndex: isDragging ? '0' : '1'
+    };
+};
 
 class PausedProfiles extends React.Component {
     static propTypes = {
@@ -34,7 +35,10 @@ class PausedProfiles extends React.Component {
                     return(
                         <Draggable key={item.id} draggableId={item.id}>
                             {(provided, snapshot) => (
-                            <div>
+                            <div className="itm-w"
+                                style={getStayedItemStyle(
+                                        snapshot.isDragging
+                                    )}>
                                 <div
                                 ref={provided.innerRef}
                                 style={getItemStyle(
